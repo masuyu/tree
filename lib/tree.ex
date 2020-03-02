@@ -77,20 +77,12 @@ defmodule Tree do
   """
   def insert(tree, element), do: do_insert(tree, element)
   defp do_insert({:EMPTY}, element), do: {:NODE, {:EMPTY}, element, {:EMPTY}}
-  defp do_insert({:LEAF, v}, element) do
-    cond do
-      v == element -> {:LEAF, element}
-      v > element -> {:NODE, {:EMPTY}, element, {:LEAF, v}}
-      v < element -> {:NODE, {:LEAF, v}, element, {:EMPTY}}
-    end
-  end
-    defp do_insert({:NODE, left, v, right}, element) do
-    cond do
-      v == element -> {:NODE, left, element, right}
-      v > element -> {:NODE, do_insert(left, element), v, right}
-      v < element -> {:NODE, left, v, do_insert(right, element)}
-    end
-  end
+  defp do_insert({:LEAF, v}, element) when v == element, do: {:LEAF, element}
+  defp do_insert({:LEAF, v}, element) when v > element, do: {:NODE, {:EMPTY}, element, {:LEAF, v}}
+  defp do_insert({:LEAF, v}, element) when v < element, do: {:NODE, {:LEAF, v}, element, {:EMPTY}}
+  defp do_insert({:NODE, left, v, right}, element) when v == element, do: {:NODE, left, element, right}
+  defp do_insert({:NODE, left, v, right}, element) when v > element, do: {:NODE, do_insert(left, element), v, right}
+  defp do_insert({:NODE, left, v, right}, element) when v < element, do: {:NODE, left, v, do_insert(right, element)}
 
   @doc """
   search
