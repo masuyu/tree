@@ -75,12 +75,8 @@ defmodule Tree do
       iex> Tree.insert({:NODE, {:LEAF, 10}, 11, {:LEAF, 12}}, 45)
       {:NODE, {:LEAF, 10}, 11, {:NODE, {:LEAF, 12}, 45, {:EMPTY}}}
   """
-  def insert(tree, element) do
-    case tree do
-      {:EMPTY} -> {:NODE, {:EMPTY}, element, {:EMPTY}}
-      _ -> do_insert(tree, element)
-    end
-  end
+  def insert({:EMPTY}, element), do: {:NODE, {:EMPTY}, element, {:EMPTY}}
+  def insert(tree, element), do: do_insert(tree, element)
   defp do_insert({:LEAF, v}, element) when v == element, do: {:LEAF, element}
   defp do_insert({:LEAF, v}, element) when v > element, do: {:NODE, {:EMPTY}, element, {:LEAF, v}}
   defp do_insert({:LEAF, v}, element) when v < element, do: {:NODE, {:LEAF, v}, element, {:EMPTY}}
@@ -98,12 +94,8 @@ defmodule Tree do
       iex> Tree.search({:NODE, {:LEAF, 10}, 11, {:NODE, {:LEAF, 12}, 45, {:EMPTY}}}, 9)
       {:false, 9}
   """
-  def search(tree, element) do
-    case tree do
-      {:EMPTY} -> {:false, element}
-      _ -> do_search(tree, element)
-    end
-  end
+  def search({:EMPTY}, element), do: {:false, element}
+  def search(tree, element), do: do_search(tree, element)
   defp do_search({:LEAF, v}, element) when v == element, do: {:true, element}
   defp do_search({:LEAF, _}, element), do: {:false, element}
   defp do_search({:NODE, _, v, _}, element) when v == element, do: {:true, element}
