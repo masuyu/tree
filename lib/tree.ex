@@ -95,18 +95,10 @@ defmodule Tree do
   """
   def search(tree, element), do: do_search(tree, element)
   defp do_search({:EMPTY}, element), do: {:false, element}
-  defp do_search({:LEAF, v}, element) do
-    cond do
-      v == element -> {:true, element}
-      true -> {:false, element}
-    end
-  end
-    defp do_search({:NODE, left, v, right}, element) do
-    cond do
-      v == element -> {:true, element}
-      v > element -> do_search(left, element)
-      v < element -> do_search(right, element)
-    end
-  end
+  defp do_search({:LEAF, v}, element) when v == element, do: {:true, element}
+  defp do_search({:LEAF, _}, element), do: {:false, element}
+  defp do_search({:NODE, _, v, _}, element) when v == element, do: {:true, element}
+  defp do_search({:NODE, left, v, _}, element) when v > element, do: do_search(left, element)
+  defp do_search({:NODE, _, v, right}, element) when v < element, do: do_search(right, element)
 
 end
