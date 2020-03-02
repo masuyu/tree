@@ -75,22 +75,19 @@ defmodule Tree do
       iex> Tree.insert({:NODE, {:LEAF, 10}, 11, {:LEAF, 12}}, 45)
       {:NODE, {:LEAF, 10}, 11, {:NODE, {:LEAF, 12}, 45, {:EMPTY}}}
   """
-  def insert(tree, element), do: do_insert(tree, element)
-  defp do_insert({:EMPTY}, element), do: {:NODE, {:EMPTY}, element, {:EMPTY}}
-  defp do_insert({:LEAF, v}, element) do
-    cond do
-      v == element -> {:LEAF, element}
-      v > element -> {:NODE, {:EMPTY}, element, {:LEAF, v}}
-      v < element -> {:NODE, {:LEAF, v}, element, {:EMPTY}}
+  def insert(tree, element) do
+    case tree do
+      {:EMPTY} -> {:NODE, {:EMPTY}, element, {:EMPTY}}
+      _ -> do_insert(tree, element)
     end
   end
-    defp do_insert({:NODE, left, v, right}, element) do
-    cond do
-      v == element -> {:NODE, left, element, right}
-      v > element -> {:NODE, do_insert(left, element), v, right}
-      v < element -> {:NODE, left, v, do_insert(right, element)}
-    end
-  end
+  defp do_insert({:LEAF, v}, element) when v == element, do: {:LEAF, element}
+  defp do_insert({:LEAF, v}, element) when v > element, do: {:NODE, {:EMPTY}, element, {:LEAF, v}}
+  defp do_insert({:LEAF, v}, element) when v < element, do: {:NODE, {:LEAF, v}, element, {:EMPTY}}
+  defp do_insert({:NODE, left, v, right}, element) when v == element, do: {:NODE, left, element, right}
+  defp do_insert({:NODE, left, v, right}, element) when v > element, do: {:NODE, do_insert(left, element), v, right}
+  defp do_insert({:NODE, left, v, right}, element) when v < element, do: {:NODE, left, v, do_insert(right, element)}
+
 
   @doc """
   search
@@ -101,20 +98,16 @@ defmodule Tree do
       iex> Tree.search({:NODE, {:LEAF, 10}, 11, {:NODE, {:LEAF, 12}, 45, {:EMPTY}}}, 9)
       {:false, 9}
   """
-  def search(tree, element), do: do_search(tree, element)
-  defp do_search({:EMPTY}, element), do: {:false, element}
-  defp do_search({:LEAF, v}, element) do
-    cond do
-      v == element -> {:true, element}
-      true -> {:false, element}
+  def search(tree, element) do
+    case tree do
+      {:EMPTY} -> {:false, element}
+      _ -> do_search(tree, element)
     end
   end
-    defp do_search({:NODE, left, v, right}, element) do
-    cond do
-      v == element -> {:true, element}
-      v > element -> do_search(left, element)
-      v < element -> do_search(right, element)
-    end
-  end
+  defp do_search({:LEAF, v}, element) when v == element, do: {:true, element}
+  defp do_search({:LEAF, _}, element), do: {:false, element}
+  defp do_search({:NODE, _, v, _}, element) when v == element, do: {:true, element}
+  defp do_search({:NODE, left, v, _}, element) when v > element, do: do_search(left, element)
+  defp do_search({:NODE, _, v, right}, element) when v < element, do: do_search(right, element)
 
 end
