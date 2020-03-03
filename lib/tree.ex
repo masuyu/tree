@@ -30,22 +30,11 @@ defmodule Tree do
       iex> Tree.make([1, 2, 3, 4, 5, 6, 7])
       {:NODE, {:NODE, {:LEAF, 1}, 2, {:LEAF, 3}}, 4, {:NODE, {:LEAF, 5}, 6, {:LEAF, 7}}}
   """
-  def make(list), do: Enum.uniq(list) |> Enum.sort() |> do_make()
-  defp do_make(list) do
-    count = Enum.count(list)
-    cond do
-      count < 4 -> list
-                   |> make_node(count)
-      true      -> list
-                   |> list_splited_three_by_center(count)
-                   |> make_node_branch()
-    end
-  end
-  defp list_splited_three_by_center(list, count) do
-    div(count, 2)
-    |> build_list(list)
-  end
-  defp build_list(center, list), do: list |> Enum.chunk_by(fn(x) -> x==Enum.at(list, center) end)
+  def make(list), do: list |> Enum.uniq() |> Enum.sort() |> do_make()
+  defp do_make(list), do: func1(list, Enum.count(list))
+  defp func1(list, count) when count < 4, do: list |> make_node(count)
+  defp func1(list, count), do: list |> list_splited_three_by_center(count) |> make_node_branch()
+  defp list_splited_three_by_center(list, count), do: list |> Enum.chunk_by(fn(x) -> x==Enum.at(list,  div(count, 2)) end)
   defp make_node_branch(list) do
     node_branch(
       do_make(Enum.at(list, 0)),
@@ -53,21 +42,16 @@ defmodule Tree do
       do_make(Enum.at(list, 2))
     )
   end
-  defp node_branch(left, v, right), do: {:NODE, left, v, right}
-
-  defp make_node(list, count) do
-    cond do
-      count == 0 -> empty()
-      count == 1 -> node(nil, Enum.at(list, 0), nil)
-      count == 2 -> node(Enum.at(list, 0), Enum.at(list, 1), nil)
-      true       -> node(Enum.at(list, 0), Enum.at(list, 1), Enum.at(list, 2))
-    end
-  end
+  defp make_node(_list, count) when count == 0, do: empty()
+  defp make_node(list, count) when count == 1, do: node(nil, Enum.at(list, 0), nil)
+  defp make_node(list, count) when count == 2, do: node(Enum.at(list, 0), Enum.at(list, 1), nil)
+  defp make_node(list, _count), do: node(Enum.at(list, 0), Enum.at(list, 1), Enum.at(list, 2))
   defp empty(), do: {:EMPTY}
   defp leaf(v), do: {:LEAF, v}
   defp node(nil, v, nil), do: {:NODE, empty(), v, empty()}
   defp node(left, v, nil), do: {:NODE, leaf(left), v, empty()}
   defp node(left, v, right), do: {:NODE, leaf(left), v, leaf(right)}
+  defp node_branch(left, v, right), do: {:NODE, left, v, right}
 
   @doc """
   insert
